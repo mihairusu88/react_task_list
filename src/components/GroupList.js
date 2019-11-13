@@ -3,6 +3,8 @@ import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
+import AddIcon from '@material-ui/icons/Add';
+import Fab from '@material-ui/core/Fab';
 import red from '@material-ui/core/colors/red';
 import orange from '@material-ui/core/colors/orange';
 import lime from '@material-ui/core/colors/lime';
@@ -13,7 +15,7 @@ import { loadGroups } from '../actions/groupsActions';
 import { loadTasks } from '../actions/tasksActions';
 import PropTypes from 'prop-types';
 import TaskMenu from './TaskMenu';
-import AddTaskDialog from './AddTaskDialog';
+import TaskDialog from './TaskDialog';
 
 const styles = theme => ({
     root: {
@@ -29,6 +31,12 @@ const styles = theme => ({
         fontSize: '16px',
         padding: '12px 5px',
         background: '#dbdbdb',
+    },
+    addTaskButton: {
+        position: 'absolute',
+        right: '10px',
+        top: '50%',
+        transform: 'translateY(-50%)'
     },
     groupTasks: {
         padding: '5px 5px',
@@ -73,6 +81,11 @@ const styles = theme => ({
 });
 
 class GroupList extends Component {
+    state = {
+        openModal: false,
+        task: null,
+    }
+
     static propTypes = {
         loadGroups: PropTypes.func.isRequired,
         loadTasks: PropTypes.func.isRequired,
@@ -85,6 +98,13 @@ class GroupList extends Component {
         this.props.loadTasks();
     }
 
+    toggleTaskModal = () => {
+        this.setState({
+            ...this.state,
+            openModal: !this.state.openModal
+        });
+    }
+
     render() {
         const { classes } = this.props;
         const { groups } = this.props.groups;
@@ -94,13 +114,15 @@ class GroupList extends Component {
             <div className={classes.root}>
                 <Grid container spacing={3}>
                     {groups.map((group) => {
-                        const groupTasks = tasks.filter((task) => task.groupId === group.id);
+                        const groupTasks = tasks.filter((task) => task.status === group.status);
                         return (
                             <Grid key={group.id} item xs={12} sm={6} lg={3} xl={3}>
                                 <Paper className={classes.groupContainer}>
                                     <Typography className={classes.groupTitle} variant="h6">
                                         {group.title}
-                                        <AddTaskDialog groupId={group.id} />
+                                        <Fab className={classes.addTaskButton} onClick={this.toggleTaskModal} size="small" color="primary" aria-label="add task">
+                                            <AddIcon />
+                                        </Fab>
                                     </Typography>
                                     <Divider />
                                     <Paper className={classes.groupTasks} elevation={0}>
@@ -116,10 +138,11 @@ class GroupList extends Component {
                                     </Paper>
                                 </Paper>
                             </Grid>
-                        )
+                        );
                     }
                     )}
                 </Grid>
+                <TaskDialog open={this.state.openModal} close={this.toggleTaskModal} data={{task: this.state.task}} />
             </div>
         );
     }

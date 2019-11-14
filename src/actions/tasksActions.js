@@ -91,3 +91,17 @@ export const loadTasks = () => {
         ]
     }
 }
+
+export const addTask = (taskData) => {
+    return {
+        type: 'ADD_TASK',
+        payload: taskData
+    }
+}
+
+export const deleteTask = (taskId) => {
+    return {
+        type: 'DELETE_TASK',
+        payload: taskId
+    }
+}

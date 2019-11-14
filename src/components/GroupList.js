@@ -12,7 +12,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { loadGroups } from '../actions/groupsActions';
-import { loadTasks } from '../actions/tasksActions';
+import { loadTasks, addTask, deleteTask } from '../actions/tasksActions';
 import PropTypes from 'prop-types';
 import TaskMenu from './TaskMenu';
 import TaskDialog from './TaskDialog';
@@ -89,6 +89,8 @@ class GroupList extends Component {
     static propTypes = {
         loadGroups: PropTypes.func.isRequired,
         loadTasks: PropTypes.func.isRequired,
+        addTask: PropTypes.func.isRequired,
+        deleteTask: PropTypes.func.isRequired,
         groups: PropTypes.object.isRequired,
         tasks: PropTypes.object.isRequired,
     };
@@ -98,6 +100,9 @@ class GroupList extends Component {
         this.props.loadTasks();
     }
 
+    /**
+     * Show/Hide task modal.
+     */
     toggleTaskModal = () => {
         this.setState({
             ...this.state,
@@ -105,10 +110,37 @@ class GroupList extends Component {
         });
     }
 
+    /**
+     * Add new task
+     */
+    addTask = (taskData) => {
+        const { tasks } = this.props.tasks;
+
+        var TaskObject = {
+            id: (tasks.length + 1),
+            title: taskData.title,
+            description: taskData.content,
+            priority: taskData.priority,
+            status: taskData.status
+        };
+
+        this.props.addTask(TaskObject);
+    }
+
+    /**
+     * Delete Task
+     */
+
+    deleteTask = (taskId) => {
+        this.props.deleteTask(taskId);
+    }
+
     render() {
         const { classes } = this.props;
         const { groups } = this.props.groups;
         const { tasks } = this.props.tasks;
+
+        console.log(this.props.tasks);
 
         return (
             <div className={classes.root}>
@@ -130,7 +162,7 @@ class GroupList extends Component {
                                             return (
                                                 <Paper key={task.id} className={classes.taskContainer}>
                                                     <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
-                                                    <TaskMenu task={task} />
+                                                    <TaskMenu task={task} deleteTask={this.deleteTask} />
                                                     <Typography className={classes.taskTitle} variant="subtitle2">{task.title}</Typography>
                                                 </Paper>
                                             )
@@ -142,7 +174,7 @@ class GroupList extends Component {
                     }
                     )}
                 </Grid>
-                <TaskDialog open={this.state.openModal} close={this.toggleTaskModal} data={{task: this.state.task}} />
+                <TaskDialog open={this.state.openModal} close={this.toggleTaskModal} data={{ task: this.state.task }} addTask={this.addTask} />
             </div>
         );
     }
@@ -157,6 +189,6 @@ export default compose(
     withStyles(styles),
     connect(
         mapStateToProps,
-        { loadGroups, loadTasks }
+        { loadGroups, loadTasks, addTask, deleteTask }
     )
 )(GroupList);

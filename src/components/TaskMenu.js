@@ -36,6 +36,11 @@ const TaskMenu = (props) => {
         setAnchorEl(null);
     };
 
+    const handleDeleteTask = () => {
+        props.deleteTask(props.task.id);
+        handleClose();
+    }
+
     return (
         <React.Fragment>
             <IconButton
@@ -65,7 +70,7 @@ const TaskMenu = (props) => {
                 }}
             >
                 <MenuItem className={classes.taskMenuItem} onClick={handleClose}>Edit Task</MenuItem>
-                <MenuItem className={classes.taskMenuItem} onClick={handleClose}>Delete Task</MenuItem>
+                <MenuItem className={classes.taskMenuItem} onClick={handleDeleteTask}>Delete Task</MenuItem>
                 {(props.task.groupId !== 4) ? <MenuItem className={classes.taskMenuItem} onClick={handleClose}>Mark as Complete</MenuItem> : ''}
             </Menu>
 

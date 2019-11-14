@@ -10,7 +10,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import { priority as priorityValues } from '../actions/types';
+import { priority as priorityValues, status as statusValues } from '../actions/types';
 
 const useStyles = makeStyles(theme => ({
     titleDialog: {
@@ -30,14 +30,20 @@ const useStyles = makeStyles(theme => ({
             }
         }
     },
+    selectElement: {
+        '& .MuiSelect-select:focus': {
+            backgroundColor: 'transparent'
+        }
+    }
 }));
 
 const TaskDialog = (props) => {
     const classes = useStyles();
     const [state, setState] = React.useState({
-        taskTitle: '',
-        taskContent: '',
+        title: '',
+        content: '',
         priority: '',
+        status: statusValues.BACKLOG
     });
 
     const handleChangeFormFields = (e) => {
@@ -53,6 +59,11 @@ const TaskDialog = (props) => {
         props.close();
     };
 
+    const submitTaskData = () => {
+        props.addTask(state);
+        handleCloseModal();
+    }
+
     return (
         <div>
             <Dialog open={props.open} onClose={handleCloseModal} aria-labelledby="add-task-form-dialog-title">
@@ -65,8 +76,8 @@ const TaskDialog = (props) => {
                         type="text"
                         variant="outlined"
                         fullWidth
-                        name="taskTitle"
-                        value={state.taskTitle}
+                        name="title"
+                        value={state.title}
                         onChange={handleChangeFormFields}
                     />
                     <TextField
@@ -77,15 +88,16 @@ const TaskDialog = (props) => {
                         rows="4"
                         variant="outlined"
                         fullWidth
-                        name="taskContent"
-                        value={state.taskContent}
+                        name="content"
+                        value={state.content}
                         onChange={handleChangeFormFields}
                     />
                     <FormControl variant="outlined" className={classes.formControl}>
                         <InputLabel id="dialog-task-priority-outlined-label">
-                            - Select Priority - 
+                            - Select Priority -
                         </InputLabel>
                         <Select
+                            className={classes.selectElement}
                             margin="dense"
                             labelId="dialog-task-priority-label"
                             id="dialog-task-priority"
@@ -95,16 +107,16 @@ const TaskDialog = (props) => {
                         >
                             <MenuItem value="">- Select Priority -</MenuItem>
                             {Object.entries(priorityValues).map(element => {
-                                return (<MenuItem key={element[0]} value={element[0]}>{element[1]}</MenuItem>);
+                                return (<MenuItem key={element[1]} value={element[1]}>{element[1]}</MenuItem>);
                             })}
                         </Select>
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseModal} variant="contained" color="primary" >
+                    <Button id="dialog-submit-button" onClick={submitTaskData} variant="contained" color="primary" >
                         Create
                     </Button>
-                    <Button onClick={handleCloseModal} color="primary">
+                    <Button id="dialog-cancel-button" onClick={handleCloseModal} color="primary">
                         Cancel
                     </Button>
                 </DialogActions>

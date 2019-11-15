@@ -11,6 +11,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
 import { priority as priorityValues, status as statusValues } from '../actions/types';
+import { connect } from 'react-redux';
+import { addTask } from '../actions/tasksActions';
+import PropTypes from 'prop-types';
+import uuid from "uuid";
 
 const useStyles = makeStyles(theme => ({
     titleDialog: {
@@ -40,10 +44,10 @@ const useStyles = makeStyles(theme => ({
 const TaskDialog = (props) => {
     const classes = useStyles();
     const [state, setState] = React.useState({
-        title: '',
-        content: '',
-        priority: '',
-        status: statusValues.BACKLOG
+        title: (props.data.task.title !== undefined) ? props.data.task.title : '',
+        content: (props.data.task.description !== undefined) ? props.data.task.description : '',
+        priority: (props.data.task.priority !== undefined) ? props.data.task.priority : '',
+        status: (props.data.task.status !== undefined) ? props.data.task.status : statusValues.BACKLOG
     });
 
     const handleChangeFormFields = (e) => {
@@ -55,14 +59,35 @@ const TaskDialog = (props) => {
         });
     };
 
+    /**
+     * Close task modal.
+     */
     const handleCloseModal = () => {
         props.close();
     };
 
-    const submitTaskData = () => {
-        props.addTask(state);
+    /**
+     * Add new task
+     */
+    const addTask = () => {
+        var TaskObject = {
+            id: uuid.v4(),
+            title: state.title,
+            description: state.content,
+            priority: state.priority,
+            status: state.status
+        };
+
+        props.addTask(TaskObject);
         handleCloseModal();
     }
+
+    /**
+     * Edit task
+     */
+    // const editTask = () => {
+    //     // @TO DO ...
+    // }
 
     return (
         <div>
@@ -113,7 +138,7 @@ const TaskDialog = (props) => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button id="dialog-submit-button" onClick={submitTaskData} variant="contained" color="primary" >
+                    <Button id="dialog-submit-button" onClick={addTask} variant="contained" color="primary" >
                         Create
                     </Button>
                     <Button id="dialog-cancel-button" onClick={handleCloseModal} color="primary">
@@ -125,4 +150,14 @@ const TaskDialog = (props) => {
     );
 }
 
-export default TaskDialog;
+TaskDialog.propTypes = {
+    open: PropTypes.bool.isRequired,
+    close: PropTypes.func.isRequired,
+    data: PropTypes.object.isRequired,
+    addTask: PropTypes.func.isRequired,
+};
+
+export default connect(
+    null,
+    { addTask }
+)(TaskDialog);

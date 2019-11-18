@@ -10,9 +10,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
-import { priority as priorityValues, status as statusValues } from '../actions/types';
+import { priority as priorityValues } from '../actions/types';
 import { connect } from 'react-redux';
-import { addTask } from '../actions/tasksActions';
+import { addTask, editTask } from '../actions/tasksActions';
+import { closeTaskModal } from '../actions/modalsActions';
 import PropTypes from 'prop-types';
 import uuid from "uuid";
 
@@ -43,18 +44,44 @@ const useStyles = makeStyles(theme => ({
 
 const TaskDialog = (props) => {
     const classes = useStyles();
-    const [state, setState] = React.useState({
-        title: (props.data.task.title !== undefined) ? props.data.task.title : '',
-        content: (props.data.task.description !== undefined) ? props.data.task.description : '',
-        priority: (props.data.task.priority !== undefined) ? props.data.task.priority : '',
-        status: (props.data.task.status !== undefined) ? props.data.task.status : statusValues.BACKLOG
-    });
+    const { modals } = props.modals;
+    const isEdit = (modals.taskModal.content.id !== undefined) ? true : false;
+    const [formData, setFormData] = React.useState(
+        {
+            title: '',
+            description: '',
+            priority: '',
+        }
+    );
 
+    /**
+     * Set form values with redux values.
+     */
+    React.useEffect(() => {
+        setFormData(
+            {
+                id: (modals.taskModal.content.id !== undefined) ? modals.taskModal.content.id : uuid.v4(),
+                title: (modals.taskModal.content.title !== undefined) ? modals.taskModal.content.title : '',
+                description: (modals.taskModal.content.description !== undefined) ? modals.taskModal.content.description : '',
+                priority: (modals.taskModal.content.priority !== undefined) ? modals.taskModal.content.priority : '',
+                status: (modals.taskModal.content.status !== undefined) ? modals.taskModal.content.status : ''
+            }
+        )
+    }, [modals]);
+
+    console.log(formData);
+
+
+    /**
+     * Set form data values.
+     * 
+     * @param {Object} e 
+     */
     const handleChangeFormFields = (e) => {
         const { value, name } = e.target;
 
-        setState({
-            ...state,
+        setFormData({
+            ...formData,
             [name]: value
         });
     };
@@ -63,36 +90,42 @@ const TaskDialog = (props) => {
      * Close task modal.
      */
     const handleCloseModal = () => {
-        props.close();
+        props.closeTaskModal();
     };
 
     /**
-     * Add new task
+     * Validate form fields.
+     * 
+     * @param {Object} formData 
+     */
+    const validateFormData = () => {
+        // @TO DO validate fields....
+    }
+
+    /**
+     * Add task
      */
     const addTask = () => {
-        var TaskObject = {
-            id: uuid.v4(),
-            title: state.title,
-            description: state.content,
-            priority: state.priority,
-            status: state.status
-        };
+        validateFormData();
 
-        props.addTask(TaskObject);
+        props.addTask(formData);
         handleCloseModal();
     }
 
     /**
      * Edit task
      */
-    // const editTask = () => {
-    //     // @TO DO ...
-    // }
+    const editTask = () => {
+        validateFormData();
+
+        props.editTask(formData);
+        handleCloseModal();
+    }
 
     return (
         <div>
-            <Dialog open={props.open} onClose={handleCloseModal} aria-labelledby="add-task-form-dialog-title">
-                <DialogTitle className={classes.titleDialog} id="add-task-form-dialog-title">Add Task</DialogTitle>
+            <Dialog open={modals.taskModal.open} onClose={handleCloseModal} aria-labelledby="add-task-form-dialog-title">
+                <DialogTitle className={classes.titleDialog} id="add-task-form-dialog-title">{(isEdit) ? 'Edit Task' : 'Add Task'}</DialogTitle>
                 <DialogContent>
                     <TextField
                         id="dialog-task-title"
@@ -102,7 +135,7 @@ const TaskDialog = (props) => {
                         variant="outlined"
                         fullWidth
                         name="title"
-                        value={state.title}
+                        value={formData.title}
                         onChange={handleChangeFormFields}
                     />
                     <TextField
@@ -113,8 +146,8 @@ const TaskDialog = (props) => {
                         rows="4"
                         variant="outlined"
                         fullWidth
-                        name="content"
-                        value={state.content}
+                        name="description"
+                        value={formData.description}
                         onChange={handleChangeFormFields}
                     />
                     <FormControl variant="outlined" className={classes.formControl}>
@@ -126,7 +159,7 @@ const TaskDialog = (props) => {
                             margin="dense"
                             labelId="dialog-task-priority-label"
                             id="dialog-task-priority"
-                            value={state.priority}
+                            value={formData.priority}
                             name="priority"
                             onChange={handleChangeFormFields}
                         >
@@ -138,8 +171,8 @@ const TaskDialog = (props) => {
                     </FormControl>
                 </DialogContent>
                 <DialogActions>
-                    <Button id="dialog-submit-button" onClick={addTask} variant="contained" color="primary" >
-                        Create
+                    <Button id="dialog-submit-button" onClick={(isEdit) ? editTask : addTask} variant="contained" color="primary" >
+                        {(isEdit) ? 'Edit' : 'Create'}
                     </Button>
                     <Button id="dialog-cancel-button" onClick={handleCloseModal} color="primary">
                         Cancel
@@ -150,14 +183,17 @@ const TaskDialog = (props) => {
     );
 }
 
+const mapStateToProps = state => ({
+    modals: state.modals
+});
+
 TaskDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    close: PropTypes.func.isRequired,
-    data: PropTypes.object.isRequired,
     addTask: PropTypes.func.isRequired,
+    editTask: PropTypes.func.isRequired,
+    closeTaskModal: PropTypes.func.isRequired,
 };
 
 export default connect(
-    null,
-    { addTask }
+    mapStateToProps,
+    { addTask, editTask, closeTaskModal }
 )(TaskDialog);

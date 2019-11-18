@@ -3,11 +3,12 @@ import IconButton from '@material-ui/core/IconButton';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import TaskDialog from './TaskDialog';
 import { makeStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux';
-import { deleteTask } from '../actions/tasksActions';
+import { deleteTask, editTask } from '../actions/tasksActions';
+import { openTaskModal } from '../actions/modalsActions';
 import PropTypes from 'prop-types';
+import { status as statusValues } from '../actions/types';
 
 const useStyles = makeStyles(theme => ({
     taskMenuButton: {
@@ -31,7 +32,6 @@ const TaskMenu = (props) => {
     const classes = useStyles();
     const [state, setState] = React.useState({
         anchorEl: null,
-        openModal: false,
     });
 
     const open = Boolean(state.anchorEl);
@@ -57,21 +57,15 @@ const TaskMenu = (props) => {
     };
 
     /**
-     * Open/Close task modal.
+     * Open task modal and prepare for edit.
      */
-    const toggleTaskModal = () => {
+    const handleEditTask = (taskData) => {
         setState({
             ...state,
             anchorEl: null,
-            openModal: !state.openModal
         });
-    }
 
-    /**
-     * Open task modal and prepare for edit.
-     */
-    const handleEditTask = () => {
-        toggleTaskModal();
+        props.openTaskModal(taskData);
     }
 
     /**
@@ -79,6 +73,16 @@ const TaskMenu = (props) => {
      */
     const handleDeleteTask = () => {
         props.deleteTask(props.task.id);
+        handleClose();
+    }
+
+    /**
+     * Mark task as complete.
+     */
+    const handleMarkComplete = (taskData) => {
+        taskData.status = statusValues.DONE;
+
+        props.editTask(taskData);
         handleClose();
     }
 
@@ -110,20 +114,21 @@ const TaskMenu = (props) => {
                     horizontal: 'right',
                 }}
             >
-                <MenuItem className={classes.taskMenuItem} onClick={handleEditTask}>Edit Task</MenuItem>
+                <MenuItem className={classes.taskMenuItem} onClick={() => handleEditTask(props.task)}>Edit Task</MenuItem>
                 <MenuItem className={classes.taskMenuItem} onClick={handleDeleteTask}>Delete Task</MenuItem>
-                {(props.task.groupId !== 4) ? <MenuItem className={classes.taskMenuItem} onClick={handleClose}>Mark as Complete</MenuItem> : ''}
+                {(props.task.groupId !== 4) ? <MenuItem className={classes.taskMenuItem} onClick={() => handleMarkComplete(props.task)}>Mark as Complete</MenuItem> : ''}
             </Menu>
-            <TaskDialog open={state.openModal} close={toggleTaskModal} data={{ task: props.task }} />
         </React.Fragment>
     )
 }
 
 TaskMenu.propTypes = {
     deleteTask: PropTypes.func.isRequired,
+    editTask: PropTypes.func.isRequired,
+    openTaskModal: PropTypes.func.isRequired,
 };
 
 export default connect(
     null,
-    { deleteTask }
+    { deleteTask, editTask, openTaskModal }
 )(TaskMenu);

@@ -13,6 +13,7 @@ import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { loadGroups } from '../actions/groupsActions';
 import { loadTasks } from '../actions/tasksActions';
+import { openTaskModal } from '../actions/modalsActions';
 import PropTypes from 'prop-types';
 import TaskMenu from './TaskMenu';
 import TaskDialog from './TaskDialog';
@@ -81,14 +82,10 @@ const styles = theme => ({
 });
 
 class GroupList extends Component {
-    state = {
-        openModal: false,
-        task: {},
-    }
-
     static propTypes = {
         loadGroups: PropTypes.func.isRequired,
         loadTasks: PropTypes.func.isRequired,
+        openTaskModal: PropTypes.func.isRequired,
         groups: PropTypes.object.isRequired,
         tasks: PropTypes.object.isRequired,
     };
@@ -98,14 +95,12 @@ class GroupList extends Component {
         this.props.loadTasks();
     }
 
-    /**
-     * Open/Close task modal.
-     */
-    toggleTaskModal = () => {
-        this.setState({
-            ...this.state,
-            openModal: !this.state.openModal
-        });
+    openModal = (groupStatus) => {
+        const taskData = {
+            status: groupStatus
+        }
+
+        this.props.openTaskModal(taskData);
     }
 
     render() {
@@ -123,7 +118,7 @@ class GroupList extends Component {
                                 <Paper className={classes.groupContainer}>
                                     <Typography className={classes.groupTitle} variant="h6">
                                         {group.title}
-                                        <Fab className={classes.addTaskButton} onClick={this.toggleTaskModal} size="small" color="primary" aria-label="add task">
+                                        <Fab className={classes.addTaskButton} onClick={() => this.openModal(group.status)} size="small" color="primary" aria-label="add task">
                                             <AddIcon />
                                         </Fab>
                                     </Typography>
@@ -145,7 +140,7 @@ class GroupList extends Component {
                     }
                     )}
                 </Grid>
-                <TaskDialog open={this.state.openModal} close={this.toggleTaskModal} data={{ task: this.state.task, groupStatus: this.state.groupStatus }} />
+                <TaskDialog />
             </div>
         );
     }
@@ -153,13 +148,13 @@ class GroupList extends Component {
 
 const mapStateToProps = state => ({
     groups: state.groups,
-    tasks: state.tasks
+    tasks: state.tasks,
 });
 
 export default compose(
     withStyles(styles),
     connect(
         mapStateToProps,
-        { loadGroups, loadTasks }
+        { loadGroups, loadTasks, openTaskModal }
     )
 )(GroupList);

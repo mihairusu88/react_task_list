@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
@@ -16,6 +17,7 @@ import { addTask, editTask } from '../actions/tasksActions';
 import { closeTaskModal } from '../actions/modalsActions';
 import PropTypes from 'prop-types';
 import uuid from "uuid";
+import FormValidator from './utils/FormValidator';
 
 const useStyles = makeStyles(theme => ({
     titleDialog: {
@@ -46,12 +48,41 @@ const TaskDialog = (props) => {
     const classes = useStyles();
     const { modals } = props.modals;
     const isEdit = (modals.taskModal.content.id !== undefined) ? true : false;
+    const validator = new FormValidator({
+        'title': {
+            validators: [
+                {
+                    method: 'isEmpty',
+                    message: 'This field is required.'
+                }
+            ],
+        },
+        'description': {
+            validators: [
+                {
+                    method: 'isEmpty',
+                    message: 'This field is required.'
+                }
+            ],
+        },
+        'priority': {
+            validators: [
+                {
+                    method: 'isEmpty',
+                    message: 'This field is required.'
+                }
+            ],
+        }
+    });
     const [formData, setFormData] = React.useState(
         {
             title: '',
             description: '',
             priority: '',
         }
+    );
+    const [formValidation, setFormValidation] = React.useState(
+        validator.validation
     );
 
     /**
@@ -69,9 +100,6 @@ const TaskDialog = (props) => {
         )
     }, [modals]);
 
-    console.log(formData);
-
-
     /**
      * Set form data values.
      * 
@@ -79,10 +107,16 @@ const TaskDialog = (props) => {
      */
     const handleChangeFormFields = (e) => {
         const { value, name } = e.target;
+        var valFieldResult = validator.validateField({ value, name });
 
         setFormData({
             ...formData,
             [name]: value
+        });
+
+        setFormValidation({
+            ...formValidation,
+            [name]: valFieldResult
         });
     };
 
@@ -94,32 +128,29 @@ const TaskDialog = (props) => {
     };
 
     /**
-     * Validate form fields.
-     * 
-     * @param {Object} formData 
-     */
-    const validateFormData = () => {
-        // @TO DO validate fields....
-    }
-
-    /**
      * Add task
      */
     const addTask = () => {
-        validateFormData();
+        const validationRes = validator.validate(formData);
+        setFormValidation(validationRes);
 
-        props.addTask(formData);
-        handleCloseModal();
+        if (validationRes.isValid === true) {
+            props.addTask(formData);
+            handleCloseModal();
+        }
     }
 
     /**
      * Edit task
      */
     const editTask = () => {
-        validateFormData();
+        const validationRes = validator.validate(formData);
+        setFormValidation(validationRes);
 
-        props.editTask(formData);
-        handleCloseModal();
+        if (validationRes.isValid === true) {
+            props.editTask(formData);
+            handleCloseModal();
+        }
     }
 
     return (
@@ -128,6 +159,7 @@ const TaskDialog = (props) => {
                 <DialogTitle className={classes.titleDialog} id="add-task-form-dialog-title">{(isEdit) ? 'Edit Task' : 'Add Task'}</DialogTitle>
                 <DialogContent>
                     <TextField
+                        error={(formValidation.title.isValid === true) ? false : true}
                         id="dialog-task-title"
                         margin="dense"
                         label="Task Title"
@@ -137,8 +169,11 @@ const TaskDialog = (props) => {
                         name="title"
                         value={formData.title}
                         onChange={handleChangeFormFields}
+                        helperText={formValidation.title.message}
                     />
+
                     <TextField
+                        error={(formValidation.description.isValid === true) ? false : true}
                         id="dialog-task-content"
                         margin="dense"
                         label="Task Content"
@@ -149,8 +184,9 @@ const TaskDialog = (props) => {
                         name="description"
                         value={formData.description}
                         onChange={handleChangeFormFields}
+                        helperText={formValidation.description.message}
                     />
-                    <FormControl variant="outlined" className={classes.formControl}>
+                    <FormControl variant="outlined" className={classes.formControl} error={(formValidation.priority.isValid === true) ? false : true}>
                         <InputLabel id="dialog-task-priority-outlined-label">
                             - Select Priority -
                         </InputLabel>
@@ -168,6 +204,7 @@ const TaskDialog = (props) => {
                                 return (<MenuItem key={element[1]} value={element[1]}>{element[1]}</MenuItem>);
                             })}
                         </Select>
+                        <FormHelperText>{formValidation.priority.message}</FormHelperText>
                     </FormControl>
                 </DialogContent>
                 <DialogActions>

@@ -34,6 +34,11 @@ const tasks = (state = initialState, action) => {
                 ...state,
                 tasks: state.tasks.filter(task => task.id !== payload)
             }
+        case 'LOAD_USER_TASKS':
+            return {
+                ...state,
+                tasks: payload
+            }
         default:
             return state;
     }

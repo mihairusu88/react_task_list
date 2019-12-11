@@ -5,6 +5,8 @@ import { withStyles } from '@material-ui/core/styles';
 import MainMenu from './MainMenu';
 import Footer from './Footer';
 import GroupList from './GroupList';
+import UserProfile from './UserProfile';
+import { Switch, Route } from "react-router-dom";
 
 const styles = theme => ({
     mainContainer: {
@@ -22,7 +24,14 @@ class Layout extends Component {
                 <CssBaseline />
                 <MainMenu></MainMenu>
                 <Container className={classes.mainContainer} maxWidth="lg">
-                    <GroupList></GroupList>
+                    <Switch>
+                        <Route exact path="/">
+                            <GroupList></GroupList>
+                        </Route>
+                        <Route exact path="/profile">
+                            <UserProfile></UserProfile>
+                        </Route>
+                    </Switch>
                 </Container>
                 <Footer></Footer>
             </React.Fragment>

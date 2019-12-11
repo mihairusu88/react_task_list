@@ -7,6 +7,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
+import { Link as RouterLink } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -17,6 +18,10 @@ const useStyles = makeStyles(theme => ({
     },
     menuButton: {
         marginRight: theme.spacing(2),
+    },
+    menuLink: {
+        textDecoration: 'none',
+        color: 'rgba(0, 0, 0, 0.87)',
     },
     title: {
         flexGrow: 1,
@@ -70,8 +75,10 @@ const MainMenu = (props) => {
                                 open={open}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                <MenuItem onClick={handleClose}>My account</MenuItem>
+                                <MenuItem onClick={handleClose}>
+                                    <RouterLink className={classes.menuLink} to="/profile">Profile</RouterLink>
+                                </MenuItem>
+                                <MenuItem onClick={handleClose}>Logout</MenuItem>
                             </Menu>
                         </div>
                     )}

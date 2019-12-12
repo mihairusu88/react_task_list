@@ -100,3 +100,43 @@ export const getAllTaskValues = () => {
         },
     ]
 }
+
+export const getAllUsers = () => {
+    return [
+        {
+            id: 1,
+            name: 'John Doe',
+            role: 'Web Developer',
+            email: 'john.doe@example.com',
+            phone: '+97 799 376-4681'
+        },
+        {
+            id: 2,
+            name: 'Jane Doe',
+            role: 'Backend Developer',
+            email: 'jane.doe@example.com',
+            phone: '+91 791 321-4511'
+        },
+        {
+            id: 3,
+            name: 'John Smith',
+            role: 'Project Manager',
+            email: 'john.smith@example.com',
+            phone: '+95 652 344-4521'
+        },
+        {
+            id: 10,
+            name: 'Anthony Doe',
+            role: 'Frontend Developer',
+            email: 'anthony.doe@example.com',
+            phone: '+97 521 322-7551'
+        },
+        {
+            id: 20,
+            name: 'Bob Smith',
+            role: 'Fullstack Developer',
+            email: 'bob.smith@example.com',
+            phone: '+96 533 332-6452'
+        }
+    ]
+}

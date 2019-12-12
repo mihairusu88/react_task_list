@@ -116,7 +116,7 @@ const TaskMenu = (props) => {
             >
                 <MenuItem className={classes.taskMenuItem} onClick={() => handleEditTask(props.task)}>Edit Task</MenuItem>
                 <MenuItem className={classes.taskMenuItem} onClick={handleDeleteTask}>Delete Task</MenuItem>
-                {(props.task.groupId !== 4) ? <MenuItem className={classes.taskMenuItem} onClick={() => handleMarkComplete(props.task)}>Mark as Complete</MenuItem> : ''}
+                {(props.task.status !== statusValues.DONE) ? <MenuItem className={classes.taskMenuItem} onClick={() => handleMarkComplete(props.task)}>Mark as Complete</MenuItem> : ''}
             </Menu>
         </React.Fragment>
     )

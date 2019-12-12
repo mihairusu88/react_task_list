@@ -6,6 +6,7 @@ import MainMenu from './MainMenu';
 import Footer from './Footer';
 import GroupList from './GroupList';
 import UserProfile from './UserProfile';
+import Users from './Users';
 import { Switch, Route } from "react-router-dom";
 
 const styles = theme => ({
@@ -28,8 +29,11 @@ class Layout extends Component {
                         <Route exact path="/">
                             <GroupList></GroupList>
                         </Route>
-                        <Route exact path="/profile">
+                        <Route path="/users/profile">
                             <UserProfile></UserProfile>
+                        </Route>
+                        <Route path="/users">
+                            <Users></Users>
                         </Route>
                     </Switch>
                 </Container>

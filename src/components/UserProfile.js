@@ -13,9 +13,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import red from '@material-ui/core/colors/red';
 import orange from '@material-ui/core/colors/orange';
 import lime from '@material-ui/core/colors/lime';
+import cyan from '@material-ui/core/colors/cyan';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import { loadUserTasks } from '../actions/tasksActions';
+import { loadUser } from '../actions/usersActions';
 
 const styles = theme => ({
     sectionTitle: {
@@ -34,6 +38,7 @@ const styles = theme => ({
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'center',
+        alignItems: 'flex-start'
     },
     profileInfoPaper: {
         display: 'flex',
@@ -109,79 +114,124 @@ const styles = theme => ({
             background: lime[400]
         }
     },
+    alertInfo: {
+        width: '100%',
+        justifyContent: 'center',
+        paddingTop: 0,
+        paddingBottom: 0,
+        margin: '15px 16px',
+        backgroundColor: cyan[500]
+    }
 })
 
 class UserProfile extends Component {
+    static propTypes = {
+        loadUser: PropTypes.func.isRequired,
+        loadUserTasks: PropTypes.func.isRequired,
+        tasks: PropTypes.object.isRequired,
+        users: PropTypes.object.isRequired,
+    };
+
     componentDidMount() {
-        const userId = 1;
-        this.props.loadUserTasks(userId);
+        const urlSplited = (window.location.href).split('/');
+        const userId = urlSplited.pop();
+        this.props.loadUser(parseInt(userId));
+        this.props.loadUserTasks(parseInt(userId));
     }
 
     render() {
         const { classes } = this.props;
         const { tasks } = this.props.tasks;
-        return (
+        const { users } = this.props.users;
+        const user = (users[0] !== undefined) ? users[0] : {};
+
+        const userContent = (
             <Grid className={classes.profileContainer} container spacing={3}>
                 <Grid className={classes.profileInfoBox} item xs={12} sm={5} lg={5} xl={5}>
                     <Paper className={classes.profileInfoPaper}>
                         <Avatar className={[classes.primary, classes.profileAvatar].join(' ')}></Avatar>
-                        <Typography className={classes.userTitle} variant="h5">John Doe</Typography>
-                        <Typography className={classes.userDescription} variant="h6">Web Developer</Typography>
+                        <Typography className={classes.userTitle} variant="h5">{user.name}</Typography>
+                        <Typography className={classes.userDescription} variant="h6">{user.role}</Typography>
                         <Divider style={{ width: '100%' }} />
                         <Grid container spacing={0}>
                             <Grid className={classes.userDetailsIcon} item xs={12} sm={3} lg={3} xl={3}>
                                 <EmailIcon />
                             </Grid>
                             <Grid className={classes.userDetailsText} item xs={12} sm={9} lg={9} xl={9}>
-                                <a href="mailto:john.doe@example.com">john.doe@example.com</a>
+                                <a href={`mailto:${user.email}`}>{user.email}</a>
                             </Grid>
                             <Divider style={{ width: '100%' }} />
                             <Grid className={classes.userDetailsIcon} item xs={12} sm={3} lg={3} xl={3}>
                                 <PhoneIcon />
                             </Grid>
                             <Grid className={classes.userDetailsText} item xs={12} sm={9} lg={9} xl={9}>
-                                +97 799 376-4681
+                                {user.phone}
                             </Grid>
                         </Grid>
                     </Paper>
                     <Paper className={classes.profileTasksBox}>
                         <Typography className={classes.sectionTitle} variant="h5">Current Tasks</Typography>
                         <List className={classes.userTaskContainer} dense={true}>
-                            {tasks.map((task, index) => {
-                                return (
-                                    <React.Fragment>
-                                        {(index > 0) ? <Divider style={{ width: '100%' }} /> : ''}
-                                        <ListItem key={task.id}>
-                                            <ListItemText
-                                                primary={task.title}
-                                            />
-                                            <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
-                                        </ListItem>
+                            {(tasks.length > 0) ?
+                                tasks.map((task, index) => {
+                                    return (
+                                        <React.Fragment key={index}>
+                                            {(index > 0) ? <Divider style={{ width: '100%' }} /> : ''}
+                                            <ListItem key={task.id}>
+                                                <ListItemText
+                                                    primary={task.title}
+                                                />
+                                                <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
+                                            </ListItem>
 
-                                    </React.Fragment>
-                                );
-                            })}
+                                        </React.Fragment>
+                                    );
+                                })
+                                :
+                                (
+                                    <SnackbarContent className={classes.alertInfo}
+                                        message="No tasks found."
+                                        role="alert"
+                                    />
+                                )
+                            }
                         </List>
                     </Paper>
                 </Grid>
                 <Grid className={classes.profileInfoBox} item xs={12} sm={7} lg={7} xl={7}>
                     <Paper className={classes.profileInfoPaper}>
                         <Typography className={classes.sectionTitle} variant="h5">Activity</Typography>
+                        <SnackbarContent className={classes.alertInfo}
+                            message="This user has no activity."
+                            role="alert"
+                        />
                     </Paper>
                 </Grid>
             </Grid>
+        );
+
+        const userNotFoundContent = (
+            <SnackbarContent className={classes.alertInfo}
+                message="This user does not exist."
+                role="alert"
+            />
+        );
+
+        return (
+            (users.length > 0) ? userContent : userNotFoundContent
         )
     }
 }
 
 const mapStateToProps = (state) => ({
-    tasks: state.tasks
+    tasks: state.tasks,
+    users: state.users
 })
 
 export default compose(
     withStyles(styles),
     connect(
         mapStateToProps,
-        { loadUserTasks }
+        { loadUserTasks, loadUser }
     )
 )(UserProfile);

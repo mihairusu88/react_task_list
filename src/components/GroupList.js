@@ -8,6 +8,8 @@ import Fab from '@material-ui/core/Fab';
 import red from '@material-ui/core/colors/red';
 import orange from '@material-ui/core/colors/orange';
 import lime from '@material-ui/core/colors/lime';
+import cyan from '@material-ui/core/colors/cyan';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { withStyles } from '@material-ui/core/styles';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
@@ -79,6 +81,15 @@ const styles = theme => ({
         paddingBottom: theme.spacing(2),
         paddingLeft: theme.spacing(2),
     },
+    alertInfo: {
+        width: '100%',
+        minWidth: '100px',
+        justifyContent: 'center',
+        paddingTop: 0,
+        paddingBottom: 0,
+        margin: '15px 0',
+        backgroundColor: cyan[500]
+    }
 });
 
 class GroupList extends Component {
@@ -124,15 +135,24 @@ class GroupList extends Component {
                                     </Typography>
                                     <Divider />
                                     <Paper className={classes.groupTasks} elevation={0}>
-                                        {groupTasks.map((task) => {
-                                            return (
-                                                <Paper key={task.id} className={classes.taskContainer}>
-                                                    <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
-                                                    <TaskMenu task={task} />
-                                                    <Typography className={classes.taskTitle} variant="subtitle2">{task.title}</Typography>
-                                                </Paper>
+                                        {(groupTasks.length > 0) ?
+                                            groupTasks.map((task) => {
+                                                return (
+                                                    <Paper key={task.id} className={classes.taskContainer}>
+                                                        <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
+                                                        <TaskMenu task={task} />
+                                                        <Typography className={classes.taskTitle} variant="subtitle2">{task.title}</Typography>
+                                                    </Paper>
+                                                )
+                                            })
+                                            :
+                                            (
+                                                <SnackbarContent className={classes.alertInfo}
+                                                    message="No tasks found."
+                                                    role="alert"
+                                                />
                                             )
-                                        })}
+                                        }
                                     </Paper>
                                 </Paper>
                             </Grid>

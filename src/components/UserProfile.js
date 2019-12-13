@@ -15,6 +15,12 @@ import orange from '@material-ui/core/colors/orange';
 import lime from '@material-ui/core/colors/lime';
 import cyan from '@material-ui/core/colors/cyan';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Button from '@material-ui/core/Button';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import IconButton from '@material-ui/core/IconButton';
 import PropTypes from 'prop-types';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
@@ -28,6 +34,8 @@ const styles = theme => ({
         padding: '10px',
         textAlign: 'center',
         borderBottom: '2px solid rgba(0, 0, 0, 0.12)',
+        background: 'rgba(0, 0, 0, 0.08)',
+        borderRadius: '4px 4px 0 0',
     },
 
     profileContainer: {
@@ -121,15 +129,27 @@ const styles = theme => ({
         paddingBottom: 0,
         margin: '15px 16px',
         backgroundColor: cyan[500]
+    },
+    profileForm: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexGrow: 1,
+        padding: '15px',
     }
-})
+});
 
 class UserProfile extends Component {
+    state = {
+        showPassword: false,
+        showConfirmPassword: false,
+    }
+
     static propTypes = {
         loadUser: PropTypes.func.isRequired,
         loadUserTasks: PropTypes.func.isRequired,
         tasks: PropTypes.object.isRequired,
         users: PropTypes.object.isRequired,
+        auth: PropTypes.object.isRequired,
     };
 
     componentDidMount() {
@@ -139,15 +159,30 @@ class UserProfile extends Component {
         this.props.loadUserTasks(parseInt(userId));
     }
 
+    handleClickShowPassword = () => {
+        this.setState({
+            showPassword: !this.state.showPassword
+        });
+    }
+
+    handleClickShowConfirmPassword = () => {
+        this.setState({
+            showConfirmPassword: !this.state.showConfirmPassword
+        });
+    }
+
     render() {
         const { classes } = this.props;
         const { tasks } = this.props.tasks;
         const { users } = this.props.users;
+        const { isAuth, user: authUser } = this.props.auth;
         const user = (users[0] !== undefined) ? users[0] : {};
+
+        console.log('render', this.props.auth.isAuth);
 
         const userContent = (
             <Grid className={classes.profileContainer} container spacing={3}>
-                <Grid className={classes.profileInfoBox} item xs={12} sm={5} lg={5} xl={5}>
+                <Grid className={classes.profileInfoBox} item xs={12} sm={6} lg={6} xl={6}>
                     <Paper className={classes.profileInfoPaper}>
                         <Avatar className={[classes.primary, classes.profileAvatar].join(' ')}></Avatar>
                         <Typography className={classes.userTitle} variant="h5">{user.name}</Typography>
@@ -198,7 +233,7 @@ class UserProfile extends Component {
                         </List>
                     </Paper>
                 </Grid>
-                <Grid className={classes.profileInfoBox} item xs={12} sm={7} lg={7} xl={7}>
+                <Grid className={classes.profileInfoBox} item xs={12} sm={6} lg={6} xl={6}>
                     <Paper className={classes.profileInfoPaper}>
                         <Typography className={classes.sectionTitle} variant="h5">Activity</Typography>
                         <SnackbarContent className={classes.alertInfo}
@@ -207,6 +242,155 @@ class UserProfile extends Component {
                         />
                     </Paper>
                 </Grid>
+                {(isAuth && user.id === authUser.id) ?
+                    <Grid className={classes.profileInfoBox} item xs={12} sm={12} lg={12} xl={12}>
+                        <Paper className={classes.profileInfoPaper}>
+                            <Typography className={classes.sectionTitle} variant="h5">Profile Info</Typography>
+                            <Grid container spacing={3}>
+                                <Grid item xs={12} sm={6} lg={6} xl={6}>
+                                    <form className={classes.profileForm} noValidate autoComplete="off">
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} sm={6} lg={6} xl={6}>
+                                                <TextField
+                                                    // error={false}
+                                                    id="profile-user-name"
+                                                    margin="dense"
+                                                    label="Name"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    name="user_name"
+                                                    defaultValue={(this.props.auth.user !== null) ? this.props.auth.user.name : ''}
+                                                // onChange={handleChangeFormFields}
+                                                // helperText={formValidation.title.message}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} lg={6} xl={6}>
+                                                <TextField
+                                                    error={false}
+                                                    id="profile-user-role"
+                                                    margin="dense"
+                                                    label="Role"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    name="user_role"
+                                                    defaultValue={(this.props.auth.user !== null) ? this.props.auth.user.role : ''}
+                                                // onChange={handleChangeFormFields}
+                                                // helperText={formValidation.title.message}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} lg={6} xl={6}>
+                                                <TextField
+                                                    error={false}
+                                                    id="profile-user-email"
+                                                    margin="dense"
+                                                    label="Email"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    name="user_email"
+                                                    defaultValue={(this.props.auth.user !== null) ? this.props.auth.user.email : ''}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start"><EmailIcon /></InputAdornment>,
+                                                    }}
+                                                // onChange={handleChangeFormFields}
+                                                // helperText={formValidation.title.message}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={6} lg={6} xl={6}>
+                                                <TextField
+                                                    error={false}
+                                                    id="profile-user-phone"
+                                                    margin="dense"
+                                                    label="Phone"
+                                                    type="text"
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    name="user_phone"
+                                                    defaultValue={(this.props.auth.user !== null) ? this.props.auth.user.phone : ''}
+                                                    InputProps={{
+                                                        startAdornment: <InputAdornment position="start"><PhoneIcon /></InputAdornment>,
+                                                    }}
+                                                // onChange={handleChangeFormFields}
+                                                // helperText={formValidation.title.message}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={12} lg={12} xl={12}>
+                                                <Button variant="contained" color="primary" type="submit">
+                                                    Update Profile
+                                            </Button>
+                                            </Grid>
+                                        </Grid>
+                                    </form>
+                                </Grid>
+                                <Grid item xs={12} sm={6} lg={6} xl={6}>
+                                    <form className={classes.profileForm} noValidate autoComplete="off">
+                                        <Grid container spacing={3}>
+                                            <Grid item xs={12} sm={12} lg={12} xl={12}>
+                                                <TextField
+                                                    error={false}
+                                                    id="profile-user-password"
+                                                    margin="dense"
+                                                    label="Password"
+                                                    type={(this.state.showPassword) ? 'text' : 'password'}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    name="user_password"
+                                                    InputProps={{
+                                                        endAdornment: <InputAdornment position="end">
+                                                            <IconButton
+                                                                aria-label="toggle password visibility"
+                                                                onClick={this.handleClickShowPassword}
+                                                                edge="end"
+                                                            >
+                                                                {(this.state.showPassword) ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                            </IconButton>
+                                                        </InputAdornment>,
+                                                    }}
+                                                // onChange={handleChangeFormFields}
+                                                // helperText={formValidation.title.message}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={12} lg={12} xl={12}>
+                                                <TextField
+                                                    error={false}
+                                                    id="profile-user-confirm-password"
+                                                    margin="dense"
+                                                    label="Confirm Password"
+                                                    type={(this.state.showConfirmPassword) ? 'text' : 'password'}
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    name="user_confirm_password"
+                                                    InputProps={{
+                                                        endAdornment: <InputAdornment position="end">
+                                                            <IconButton
+                                                                aria-label="toggle confirm password visibility"
+                                                                onClick={this.handleClickShowConfirmPassword}
+                                                                edge="end"
+                                                            >
+                                                                {(this.state.showConfirmPassword) ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                            </IconButton>
+                                                        </InputAdornment>,
+                                                    }}
+                                                // onChange={handleChangeFormFields}
+                                                // helperText={formValidation.title.message}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} sm={12} lg={12} xl={12}>
+                                                <Button variant="contained" color="primary" type="submit">
+                                                    Change Password
+                                            </Button>
+                                            </Grid>
+                                        </Grid>
+                                    </form>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                    :
+                    ''
+                }
             </Grid>
         );
 
@@ -224,6 +408,7 @@ class UserProfile extends Component {
 }
 
 const mapStateToProps = (state) => ({
+    auth: state.auth,
     tasks: state.tasks,
     users: state.users
 })

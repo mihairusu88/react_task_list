@@ -1,16 +1,16 @@
 ### ---------------- Tasks ----------------
 
 ### Testing get all tasks.
-GET http://localhost:3001/tasks
+GET http://localhost:5000/api/tasks
 
 ### Testing get a single task
-GET http://localhost:3001/tasks/5dfa129be6b3b820d840b9ff
+GET http://localhost:5000/api/tasks/<task_id>
 
 ### Testing get user tasks
-GET http://localhost:3001/tasks/user/5
+GET http://localhost:5000/api/tasks/user/<user_id>
 
 ### Testing create a task
-POST http://localhost:3001/tasks
+POST http://localhost:5000/api/tasks
 Content-type: application/json
 
 {
@@ -22,17 +22,17 @@ Content-type: application/json
 }
 
 ### Testing update a task
-PUT http://localhost:3001/tasks/5dfa129be6b3b820d840b9ff
+PUT http://localhost:5000/api/tasks/<task_id>
 Content-type: application/json
 
 {
-    "title": "This is a test task111",
-    "description": "This is a task description111",
+    "title": "New task title",
+    "description": "New task description",
     "priority": "MEDIUM",
     "status": "BACKLOG",
     "assignedUsersId": [1, 2, 3, 4, 5]   
 }
 
 ### Delete a task
-DELETE http://localhost:3001/tasks/5dfa129be6b3b820d840b9ff
+DELETE http://localhost:5000/api/tasks/<task_id>
 

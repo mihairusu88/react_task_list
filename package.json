@@ -1,6 +1,7 @@
 {
   "name": "react_task_list",
   "version": "0.1.0",
+  "description": "React Task List",
   "main": "server.js",
   "scripts": {
     "client-install": "npm install --prefix client",

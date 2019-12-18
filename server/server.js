@@ -12,15 +12,14 @@ mongoose.connect(process.env.MONGO_URI, {
     useCreateIndex: true,
     useUnifiedTopology: true,
 })
-    .then(() => {
-        console.log('Successfully connected to database.')
-    })
-    .catch(() => {
-        console.log('An error has occurred trying to connect to database.')
-    });
+    .then(() => console.log('Successfully connected to database.'))
+    .catch(() => console.log('An error has occurred trying to connect to database.'));
 
-app.use('/tasks', tasksRouter);
+app.use('/api/tasks', tasksRouter);
 
-app.listen(process.env.PORT, process.env.HOST, function () {
+const host = '0.0.0.0';
+const port = process.env.PORT || 5000;
+
+app.listen(port, host, function () {
     console.log(`Server is running on port ${process.env.PORT}`);
 });

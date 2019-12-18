@@ -1,6 +1,6 @@
-# React Kanban Task List
+# React Task List
 
-> React Kanban task list built with MaterialUI and Redux for state management. 
+> React task list built with MaterialUI and Redux for state management. 
 > I used mock values for now, so when you refresh the page it will return original values.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

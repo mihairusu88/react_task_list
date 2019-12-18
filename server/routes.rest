@@ -1,0 +1,38 @@
+### ---------------- Tasks ----------------
+
+### Testing get all tasks.
+GET http://localhost:3001/tasks
+
+### Testing get a single task
+GET http://localhost:3001/tasks/5dfa129be6b3b820d840b9ff
+
+### Testing get user tasks
+GET http://localhost:3001/tasks/user/5
+
+### Testing create a task
+POST http://localhost:3001/tasks
+Content-type: application/json
+
+{
+    "title": "This is a test task",
+    "description": "This is a task description",
+    "priority": "HIGH",
+    "status": "BACKLOG",
+    "assignedUsersId": [1, 2, 3]   
+}
+
+### Testing update a task
+PUT http://localhost:3001/tasks/5dfa129be6b3b820d840b9ff
+Content-type: application/json
+
+{
+    "title": "This is a test task111",
+    "description": "This is a task description111",
+    "priority": "MEDIUM",
+    "status": "BACKLOG",
+    "assignedUsersId": [1, 2, 3, 4, 5]   
+}
+
+### Delete a task
+DELETE http://localhost:3001/tasks/5dfa129be6b3b820d840b9ff
+

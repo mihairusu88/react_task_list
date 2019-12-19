@@ -117,13 +117,13 @@ class GroupList extends Component {
     render() {
         const { classes } = this.props;
         const { groups } = this.props.groups;
-        const { tasks } = this.props.tasks;
+        const { tasks, isLoading } = this.props.tasks;
 
         return (
             <div className={classes.root}>
                 <Grid container spacing={3}>
                     {groups.map((group) => {
-                        const groupTasks = tasks.filter((task) => task.status === group.status);
+                        const groupTasks = (tasks !== undefined) ? tasks.filter((task) => task.status === group.status) : [];
                         return (
                             <Grid key={group.id} item xs={12} sm={6} lg={3} xl={3}>
                                 <Paper className={classes.groupContainer}>
@@ -135,23 +135,29 @@ class GroupList extends Component {
                                     </Typography>
                                     <Divider />
                                     <Paper className={classes.groupTasks} elevation={0}>
-                                        {(groupTasks.length > 0) ?
-                                            groupTasks.map((task) => {
-                                                return (
-                                                    <Paper key={task.id} className={classes.taskContainer}>
-                                                        <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
-                                                        <TaskMenu task={task} />
-                                                        <Typography className={classes.taskTitle} variant="subtitle2">{task.title}</Typography>
-                                                    </Paper>
-                                                )
-                                            })
-                                            :
-                                            (
-                                                <SnackbarContent className={classes.alertInfo}
-                                                    message="No tasks found."
-                                                    role="alert"
-                                                />
-                                            )
+                                        {
+                                            (isLoading === false) ?
+                                                (groupTasks.length > 0) ?
+                                                    groupTasks.map((task) => {
+                                                        return (
+                                                            <Paper key={task._id} className={classes.taskContainer}>
+                                                                <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
+                                                                <TaskMenu task={task} />
+                                                                <Typography className={classes.taskTitle} variant="subtitle2">{task.title}</Typography>
+                                                            </Paper>
+                                                        )
+                                                    })
+                                                    :
+                                                    (
+                                                        <SnackbarContent className={classes.alertInfo}
+                                                            message="No tasks found."
+                                                            role="alert"
+                                                        />
+                                                    )
+                                                :
+                                                <div className="loader">
+                                                    <div className="loading-circle"></div>
+                                                </div>
                                         }
                                     </Paper>
                                 </Paper>

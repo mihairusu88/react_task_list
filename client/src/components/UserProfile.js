@@ -123,7 +123,7 @@ const styles = theme => ({
         }
     },
     alertInfo: {
-        width: '100%',
+        width: 'calc(100% - 32px)',
         justifyContent: 'center',
         paddingTop: 0,
         paddingBottom: 0,
@@ -173,7 +173,7 @@ class UserProfile extends Component {
 
     render() {
         const { classes } = this.props;
-        const { tasks } = this.props.tasks;
+        const { tasks, isLoading } = this.props.tasks;
         const { users } = this.props.users;
         const { isAuth, user: authUser } = this.props.auth;
         const user = (users[0] !== undefined) ? users[0] : {};
@@ -207,28 +207,32 @@ class UserProfile extends Component {
                     <Paper className={classes.profileTasksBox}>
                         <Typography className={classes.sectionTitle} variant="h5">Current Tasks</Typography>
                         <List className={classes.userTaskContainer} dense={true}>
-                            {(tasks.length > 0) ?
-                                tasks.map((task, index) => {
-                                    return (
-                                        <React.Fragment key={index}>
-                                            {(index > 0) ? <Divider style={{ width: '100%' }} /> : ''}
-                                            <ListItem key={task.id}>
-                                                <ListItemText
-                                                    primary={task.title}
-                                                />
-                                                <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
-                                            </ListItem>
+                            {
+                                (isLoading === false) ?
+                                    (tasks.length > 0) ?
+                                        tasks.map((task, index) => {
+                                            return (
+                                                <React.Fragment key={index}>
+                                                    {(index > 0) ? <Divider style={{ width: '100%' }} /> : ''}
+                                                    <ListItem key={task.id}>
+                                                        <ListItemText
+                                                            primary={task.title}
+                                                        />
+                                                        <Typography className={[classes.taskPriority, task.priority.toLowerCase()].join(' ')} variant="caption">{task.priority}</Typography>
+                                                    </ListItem>
 
-                                        </React.Fragment>
-                                    );
-                                })
-                                :
-                                (
-                                    <SnackbarContent className={classes.alertInfo}
-                                        message="No tasks found."
-                                        role="alert"
-                                    />
-                                )
+                                                </React.Fragment>
+                                            );
+                                        })
+                                        :
+                                        <SnackbarContent className={classes.alertInfo}
+                                            message="No tasks found."
+                                            role="alert"
+                                        />
+                                    :
+                                    <div className="loader">
+                                        <div className="loading-circle"></div>
+                                    </div>
                             }
                         </List>
                     </Paper>
@@ -248,7 +252,7 @@ class UserProfile extends Component {
                             <Typography className={classes.sectionTitle} variant="h5">Profile Info</Typography>
                             <Grid container spacing={3}>
                                 <Grid item xs={12} sm={6} lg={6} xl={6}>
-                                    <form className={classes.profileForm} noValidate autoComplete="off">
+                                    <form className={classes.profileForm} noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()}>
                                         <Grid container spacing={3}>
                                             <Grid item xs={12} sm={6} lg={6} xl={6}>
                                                 <TextField
@@ -325,7 +329,7 @@ class UserProfile extends Component {
                                     </form>
                                 </Grid>
                                 <Grid item xs={12} sm={6} lg={6} xl={6}>
-                                    <form className={classes.profileForm} noValidate autoComplete="off">
+                                    <form className={classes.profileForm} noValidate autoComplete="off" onSubmit={(e) => e.preventDefault()} >
                                         <Grid container spacing={3}>
                                             <Grid item xs={12} sm={12} lg={12} xl={12}>
                                                 <TextField

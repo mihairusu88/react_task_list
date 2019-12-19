@@ -6,6 +6,7 @@ import { loadAuthUser } from './actions/authActions';
 import {
   BrowserRouter as Router,
 } from "react-router-dom";
+import './style.css';
 
 class App extends Component {
   componentDidMount() {

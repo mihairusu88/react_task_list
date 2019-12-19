@@ -11,6 +11,7 @@ import { Switch, Route } from "react-router-dom";
 
 const styles = theme => ({
     mainContainer: {
+        marginTop: '64px',
         paddingTop: theme.spacing(3),
         minHeight: 'calc(100vh - 64px - 53px)'
     },

@@ -19,7 +19,8 @@ const taskSchema = new mongoose.Schema({
     },
     assignedUsersId: {
         type: Array,
-        required: true
+        required: true,
+        default: []
     },
     createdDate: {
         type: Date,

@@ -72,7 +72,7 @@ const TaskMenu = (props) => {
      * Delete task.
      */
     const handleDeleteTask = () => {
-        props.deleteTask(props.task.id);
+        props.deleteTask(props.task._id);
         handleClose();
     }
 

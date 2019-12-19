@@ -1,10 +1,10 @@
 import { getAllUsers } from '../mock_values';
 
-export const loadAuthUser = () => {
+export const loadAuthUser = () => (dispatch) => {
     const allUsers = getAllUsers();
 
-    return {
+    dispatch({
         type: 'AUTH_USER_LOADED',
         payload: allUsers[0]
-    }
+    });
 }

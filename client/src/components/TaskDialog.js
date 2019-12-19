@@ -16,7 +16,6 @@ import { connect } from 'react-redux';
 import { addTask, editTask } from '../actions/tasksActions';
 import { closeTaskModal } from '../actions/modalsActions';
 import PropTypes from 'prop-types';
-import uuid from "uuid";
 import FormValidator from './utils/FormValidator';
 
 const useStyles = makeStyles(theme => ({
@@ -47,7 +46,7 @@ const useStyles = makeStyles(theme => ({
 const TaskDialog = (props) => {
     const classes = useStyles();
     const { modals } = props.modals;
-    const isEdit = (modals.taskModal.content.id !== undefined) ? true : false;
+    const isEdit = (modals.taskModal.content._id !== undefined) ? true : false;
     const validator = new FormValidator({
         'title': {
             validators: [
@@ -91,7 +90,6 @@ const TaskDialog = (props) => {
     React.useEffect(() => {
         setFormData(
             {
-                id: (modals.taskModal.content.id !== undefined) ? modals.taskModal.content.id : uuid.v4(),
                 title: (modals.taskModal.content.title !== undefined) ? modals.taskModal.content.title : '',
                 description: (modals.taskModal.content.description !== undefined) ? modals.taskModal.content.description : '',
                 priority: (modals.taskModal.content.priority !== undefined) ? modals.taskModal.content.priority : '',
@@ -135,7 +133,12 @@ const TaskDialog = (props) => {
         setFormValidation(validationRes);
 
         if (validationRes.isValid === true) {
-            props.addTask(formData);
+            const taskData = {
+                ...formData,
+                assignedUsersId: [1, 2, 3, 10, 20],
+            }
+
+            props.addTask(taskData);
             handleCloseModal();
         }
     }
@@ -148,7 +151,13 @@ const TaskDialog = (props) => {
         setFormValidation(validationRes);
 
         if (validationRes.isValid === true) {
-            props.editTask(formData);
+            const taskData = {
+                ...formData,
+                _id: modals.taskModal.content._id,
+                assignedUsersId: modals.taskModal.content.assignedUsersId,
+            }
+
+            props.editTask(taskData);
             handleCloseModal();
         }
     }

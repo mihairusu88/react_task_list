@@ -44,7 +44,7 @@ class Users extends Component {
 
     render() {
         const { classes } = this.props;
-        const { users } = this.props.users;
+        const { users, isLoading } = this.props.users;
         const LinkVewProfile = React.forwardRef((props, ref) => <RouterLink innerRef={ref} {...props} />);
 
         const usersContent = (
@@ -94,7 +94,12 @@ class Users extends Component {
         );
 
         return (
-            (users.length > 0) ? usersContent : usersNotFoundContent
+            (isLoading === false) ?
+                (users.length > 0) ? usersContent : usersNotFoundContent
+                :
+                <div className="loader">
+                    <div className="loading-circle"></div>
+                </div>
         )
     }
 }

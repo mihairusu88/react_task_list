@@ -1,7 +1,7 @@
 import { status } from './types';
 
-export const loadGroups = () => {
-    return {
+export const loadGroups = () => (dispatch) => {
+    dispatch({
         type: 'LOAD_GROUPS',
         payload: [
             {
@@ -25,5 +25,5 @@ export const loadGroups = () => {
                 status: status.DONE,
             },
         ]
-    }
+    });
 }

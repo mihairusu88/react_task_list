@@ -1,4 +1,5 @@
 const initialState = {
+    isLoading: true,
     tasks: []
 }
 
@@ -6,21 +7,29 @@ const tasks = (state = initialState, action) => {
     const { payload } = action;
 
     switch (action.type) {
+        case 'LOADING_TASKS':
+            return {
+                ...state,
+                isLoading: true,
+            }
         case 'LOAD_TASKS':
             return {
                 ...state,
-                tasks: payload
+                isLoading: false,
+                tasks: payload,
             }
         case 'ADD_TASK':
             return {
                 ...state,
-                tasks: [payload, ...state.tasks]
+                isLoading: false,
+                tasks: [payload, ...state.tasks],
             }
         case 'EDIT_TASK':
             return {
                 ...state,
+                isLoading: false,
                 tasks: state.tasks.map(task =>
-                    task.id === payload.id ? {
+                    task._id === payload._id ? {
                         ...task,
                         title: payload.title,
                         description: payload.description,
@@ -32,11 +41,18 @@ const tasks = (state = initialState, action) => {
         case 'DELETE_TASK':
             return {
                 ...state,
-                tasks: state.tasks.filter(task => task.id !== payload)
+                isLoading: false,
+                tasks: state.tasks.filter(task => task._id !== payload)
+            }
+        case 'LOADING_USER_TASKS':
+            return {
+                ...state,
+                isLoading: true,
             }
         case 'LOAD_USER_TASKS':
             return {
                 ...state,
+                isLoading: false,
                 tasks: payload
             }
         default:

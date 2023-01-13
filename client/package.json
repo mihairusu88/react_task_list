@@ -42,8 +42,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://192.168.1.213:5000",
-  "engines": {
-    "node": "12.x"
-  }
+  "proxy": "http://192.168.1.213:5000"
 }

@@ -25,13 +25,11 @@ npm run client
 # Server runs on http://localhost:5000 and client on http://localhost:3000
 ```
 
-### Check live demo on Heroku
+### Check live demo on netlify
 
-[Live Demo](https://react-task-list.herokuapp.com/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/ade895a9-4b2f-496c-aae3-3e90003f9950/deploy-status?branch=master)](https://app.netlify.com/sites/react-task-list-mongodb/deploys)
 
-### Deployment
-
-Simply push to Heroku and it will build and load the client index.html page
+[Live Demo](https://react-task-list-mongodb.netlify.app/)
 
 ### Version
 
